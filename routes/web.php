@@ -2,16 +2,39 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::resource('users', \App\Http\Controllers\UserController::class);
+//Route::resource('users', \App\Http\Controllers\UserController::class);
 
-/*
-Route::get('/users/create', [\App\Http\Controllers\UserController::class, 'create']);
 
-Route::get('/users/edit', [\App\Http\Controllers\UserController::class, 'edit']);
-// User Store
-Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.create');
+Route::get('insert', function () {
+    // Query Builder
+    /*\Illuminate\Support\Facades\DB::
+        table('users')
+        ->insert([
+        "name" => "ali",
+        "email" => "t@t.com",
+        "password" => bcrypt("test"),
+        "created_at" => \Carbon\Carbon::now(),
+        "updated_at" => \Carbon\Carbon::now()
+    ]);*/
 
-// User Show For Edit
+    // Eloquent
+    \App\Models\User::create([
+        "name" => "ali",
+        "email" => "t@t.com",
+        "password" => bcrypt("test")
+    ]);
+});
 
-// User Update
-Route::post('/users/edit', [\App\Http\Controllers\UserController::class, 'update'])->name('users.edit');*/
+Route::get('get', function () {
+    // Query Builder
+    $user = \Illuminate\Support\Facades\DB::
+        table('users')
+        ->find(4);
+
+//    dd($user);
+
+    // Eloquent
+    $user = \App\Models\User::find(4);
+    return $user;
+    dd($user);
+});
