@@ -2,44 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\User\StoreRequest;
+use App\Http\Requests\User\UpdateRequest;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 
 class UserController extends Controller
 {
-    public function create()
+    public function index(): Factory|View
     {
-        return view('create');
+        return view('users.index');
     }
 
-    public function store()
+    public function create(): Factory|View
     {
-        $name = request()->input('name');
-        $family = request()->input('family');
-        $user = ["name" => $name, "family" => $family];
-        $json_user = json_encode($user);
-
-        file_put_contents("users.json", $json_user);
-        return "User successfully created";
+        return view('users.create');
     }
 
-    public function edit()
+    public function store(StoreRequest $request)
     {
-        $file_data = file_get_contents("users.json");
-        $user = json_decode($file_data);
-
-        return view('edit', ['user' => $user]);
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+        User::create($data);
+        return redirect()->route('users.index');
     }
 
-    public function update()
+    public function edit(User $user): Factory|View
     {
-        $name = request()->input('name');
-        $family = request()->input('family');
+        return view('users.edit', ['user' => $user]);
+    }
 
-        $user = ["name" => $name, "family" => $family];
-        $json_user = json_encode($user);
+    public function update(UpdateRequest $request, User $user): RedirectResponse
+    {
+        $user->update($request->validated());
+        return redirect()->route('users.index');
+    }
 
-        file_put_contents("users.json", $json_user);
-
-        return "User successfully Updated";
+    public function destroy(User $user): RedirectResponse
+    {
+        $user->delete();
+        return redirect()->route('users.index');
     }
 }
